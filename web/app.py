@@ -122,11 +122,12 @@ def upload_image():
         "password": password
     }
 
-    # Create image if doesnt exist
-    folder = f"{UPLOAD_FOLDER}/{hash_full}"
-    if not os.path.isdir(folder):  # create folder / file if doesnt exist
-        os.mkdir(folder)
-        file.save(f"{folder}/image.{ext}")  # Save image with new name
+   
+# Create image if doesnt exist
+folder = f"{UPLOAD_FOLDER}/{hash_full}"
+if not os.path.isdir(folder):  # create folder / file if doesnt exist
+    os.makedirs(folder, exist_ok=True)  # ใช้ os.makedirs แทน os.mkdir
+    file.save(f"{folder}/image.{ext}")  # Save image with new name
 
     # Insert in DB
     db.uploads.insert_one(json_config)
