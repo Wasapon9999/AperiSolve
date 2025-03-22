@@ -20,7 +20,10 @@ from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = os.environ['MONGO_URI']
+app.config["MONGO_URI"] = 'mongodb://' + os.environ['MONGODB_USERNAME']
+app.config["MONGO_URI"] += ':' + os.environ['MONGODB_PASSWORD']
+app.config["MONGO_URI"] += '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/'
+app.config["MONGO_URI"] += os.environ['MONGODB_DATABASE']
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 Mb max
 app.config['LANGUAGES'] = {
     'en': 'English',
@@ -122,12 +125,11 @@ def upload_image():
         "password": password
     }
 
-   
-# Create image if doesnt exist
-folder = f"{UPLOAD_FOLDER}/{hash_full}"
-if not os.path.isdir(folder):  # create folder / file if doesnt exist
-    os.makedirs(folder, exist_ok=True)  # ใช้ os.makedirs แทน os.mkdir
-    file.save(f"{folder}/image.{ext}")  # Save image with new name
+    # Create image if doesnt exist
+    folder = f"{UPLOAD_FOLDER}/{hash_full}"
+    if not os.path.isdir(folder):  # create folder / file if doesnt exist
+        os.mkdir(folder)
+        file.save(f"{folder}/image.{ext}")  # Save image with new name
 
     # Insert in DB
     db.uploads.insert_one(json_config)
@@ -300,6 +302,4 @@ def send_js(path):
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=8088)
-
-app = app
+    app.run('0.0.0.0', port=5000)
