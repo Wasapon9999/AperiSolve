@@ -3,6 +3,7 @@ WORKDIR /app
 COPY . .
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_ENV=production
-RUN pip install gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:8088", "app:app"]
+ENV FLASK_ENV=development
+RUN pip install -r requirements.txt
+EXPOSE 8088
+CMD ["flask", "run"]
