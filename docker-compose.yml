@@ -1,6 +1,9 @@
+version: '3.8'
 services:
   web:
-    image: ghcr.io/zeecka/aperisolve-web:latest
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     container_name: aperisolve_web
     volumes:
       - aperisolve-data:/app/static/uploads
@@ -10,11 +13,11 @@ services:
       - .env
     depends_on:
       - mongodb
-    networks:
-      - frontend
-      - backend
+
   backend:
-    image: ghcr.io/zeecka/aperisolve-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: aperisolve_back
     volumes:
       - aperisolve-data:/app/uploads
@@ -22,27 +25,20 @@ services:
       - .env
     depends_on:
       - mongodb
-    networks:
-      - backend
+
   mongodb:
     image: mongo:4.0.8
     container_name: mongodb
-    restart: unless-stopped
     command: mongod --auth
     env_file:
       - .env
     volumes:
       - aperisolve-db:/data/db
       - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    networks:
-      - backend
+
+volumes:
+  aperisolve-data:
+  aperisolve-db:
 
 networks:
-  frontend:
-    driver: bridge
-  backend:
-    driver: bridge
-volumes:
-  aperisolve-data: # All uploads will be stored in this volume
-  aperisolve-db: # All mongo db related data will be stored in this volume
-  
+  default:
